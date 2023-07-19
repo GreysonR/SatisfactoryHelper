@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Satisfactory Helper</title>
+	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/inputs.css">
+</head>
+<body>
+	<div id="dashboard">
+		<div id="canvWrapper">
+			<canvas id="canv"></canvas>
+		</div>
+		<div id="sideMenu">
+			<h1>Output</h1>
+			<div style="width: 100%; position: relative">
+				<input type="text" id="desiredQuantity" placeholder="0" value=2>
+				<script>
+					function setCaretPosition(element, caretPos) {
+						if (element != null) {
+							if(element.createTextRange) {
+								var range = element.createTextRange();
+								range.move('character', caretPos);
+								range.select();
+							}
+							else {
+								if(element.selectionStart) {
+									element.focus();
+									element.setSelectionRange(caretPos, caretPos);
+								}
+								else
+									element.focus();
+							}
+						}
+					}
+					(function limitInput() {
+						let input = document.getElementById("desiredQuantity");
+						let maxLength = 3;
+	
+						// prevent invalid characters
+						input.keypress = function(char) {
+							return char.replace(/[^0-9+]/g, "");;
+						}
+	
+						// limit length of input
+						input.addEventListener("input", event => {
+							let caretPosition = event.target.selectionStart;
+							let ogValue = event.target.value;
+							event.target.value = event.target.value.replace(/[^0-9+]/g, "");
+	
+							if (ogValue !== event.target.value) {
+								caretPosition--;
+							}
+	
+							let value = input.value;
+							if (value.length > maxLength) {
+								input.value = value.slice(0, maxLength); // trim end off value
+							}
+							setCaretPosition(input, caretPosition); // reset caret to right position
+	
+						});
+					})();
+				</script>
+				<div id="desiredComponent" onclick="openComponentModal()">Modular frame</div>
+				<script>
+					function openComponentModal() {
+						let modal = document.getElementById("componentModal");
+						modal.classList.add("active");
+					}
+				</script>
+				<div id="calculateButton" onclick="runCalculateProduction()">Calculate</div>
+				<script>
+					desiredComponent.value = "modular frame";
+					function runCalculateProduction() {
+						let desiredQuantity = Number(document.getElementById("desiredQuantity").value);
+						let desiredComponent = document.getElementById("desiredComponent").value;
+						console.log(desiredQuantity, desiredComponent);
+						if (desiredQuantity > 0 && ComponentData[desiredComponent]) {
+							calculateProduction(desiredComponent, desiredQuantity);
+						}
+					}
+				</script>
+			</div>
+			<div id="componentModal">
+				<div id="componentModalContent" class="scrollSection topGradient">
+					<div style="height: 50px"></div>
+					<!-- <div class="tier">
+						<h1>Tier 1</h1>
+						<div class="component">Iron rod</div>
+						<div class="component">Iron plate</div>
+						<div class="component">Copper plate</div>
+						<div class="component">Steel ingot</div>
+					</div> -->
+				</div>
+			</div>
+
+			<h1 style="margin-top: 30px;">Components</h1>
+			<div id="componentsList" style="height: 75%;">
+				<div class="scrollSection" id="componentsListContent" style="margin-left: 0; border-radius: 5px;">
+					<!-- <div class="component waste">
+						<h1>Reinforced iron plate</h1>
+						<div><div class="number">3</div> Used</div>
+						<div><div class="number">45</div> Produced</div>
+						<div><div class="number">1</div> Assembler</div>
+						<div><div class="number waste">2</div> Wasted</div>
+					</div>
+					<div class="component">
+						<h1>Reinforced iron plate</h1>
+						<div><div class="number">999</div> Used</div>
+						<div><div class="number">99999</div> Produced</div>
+						<div><div class="number">99999</div> Constructors</div>
+						<div><div class="number noWaste">999</div> Wasted</div>
+					</div> -->
+				</div>
+			</div>
+			<script>
+				(function fixComponentsListHeight() {
+					let elem = document.getElementById("componentsList");
+					let dashboard = document.getElementById("dashboard");
+					elem.style.height = (dashboard.clientTop + dashboard.clientHeight - elem.clientTop - 270) + "px";
+
+					window.addEventListener("resize", fixComponentsListHeight);
+				})();
+			</script>
+		</div>
+	</div>
+	<div style="display: none;">
+		<input type="number" name="quantity" id="quantity" placeholder="0" value=16 />
+		<select name="component" id="component">
+			<option value="rotor">Rotor</option>
+			<option value="iron ore">Iron ore</option>
+			<option value="iron ingot">Iron ingot</option>
+			<option value="screw">Screw</option>
+			<option value="rod">Rod</option>
+		</select>
+	</div>
+
+
+	<script src="./js/vec.js"></script>
+	<script src="./js/Render.js"></script>
+	<script src="./js/Math.js"></script>
+	<script src="./js/componentData.js"></script>
+	<script src="./js/Components.js"></script>
+	<script src="./js/calculateProduction.js"></script>
+
+	<script src="./js/main.js"></script>
+</body>
+</html>

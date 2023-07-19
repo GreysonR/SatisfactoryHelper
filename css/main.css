@@ -1,0 +1,360 @@
+:root {
+	--text: #F0F0EF;
+	--textDark: #0F0F0E;
+	--background: #0A1C29;
+	--primary: #F5A97A;
+	--secondary: #061118;
+	--accent: #162836;
+	--borderRadius: 15px;
+}
+
+body {
+	margin: 0;
+	overflow: hidden;
+	background-color: var(--secondary);
+}
+input {
+	width: 40px;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+	-webkit-appearance: none; 
+	margin: 0; 
+}
+div {
+	user-select: none;
+}
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
+
+
+#dashboard {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr min(42vw, 700px);
+	grid-column-gap: 40px;
+
+	position: absolute;
+	top:  20px;
+	left: 20px;
+	height: calc(100vh - 40px);
+	width:  calc(100vw - 40px);
+}
+#canvWrapper {
+	width: 100%;
+	height: 100%;
+
+	position: relative;
+	border-radius: var(--borderRadius);
+	overflow: hidden;
+}
+#sideMenu {
+	position: relative;
+
+	/* background: var(--background); */
+	border-radius: var(--borderRadius);
+	height: inherit;
+	width: 100%;
+
+	font-family: "Poppins", sans-serif;
+	font-weight: 400;
+	font-size: 16px;
+	color: var(--text);
+}
+.scrollSection {
+	overflow-y: scroll;
+	overflow-x: visible;
+
+	position: relative;
+
+	margin-top: 10px;
+	margin-left: 10px;
+	height: calc(100% - 20px);
+	width: calc(100% -  10px);
+}
+.scrollSection::-webkit-scrollbar {
+	width: 10px;	
+	background: transparent;
+	position: relative;
+	z-index: 8;
+	border-radius: 20px;
+	scrollbar-gutter: stable both-edges;
+}
+.scrollSection::-webkit-scrollbar-track {
+	width: 10px;
+	background: #33506419;
+	border-radius: 20px;
+}
+.scrollSection::-webkit-scrollbar-thumb {
+	width: 10px;
+	background: #456D8A33;
+	border-radius: 20px;
+}
+.scrollSection.topGradient::before {
+	content: "";
+	display: block;
+	position: sticky;
+	left: 0;
+	top: 0;
+	
+	z-index: 2;
+	background: linear-gradient(to bottom, #061118, #06111800);
+	width: inherit;
+	height: 70px;
+	margin-bottom: -70px;
+	pointer-events: none;
+}
+.scrollSection::after {
+	content: "";
+	display: block;
+	
+	position: sticky;
+	left: 0;
+	bottom: -1px;
+
+	z-index: 2;
+	background: linear-gradient(to top, #061118, #06111800);
+	width: inherit;
+	height: 100px;
+	margin-top: -60px;
+	pointer-events: none;
+}
+
+h1 {
+	font-family: "Noto Sans Display", sans-serif;
+	font-weight: 600;
+	font-size: 28px;
+	color: var(--text);
+	user-select: none;
+	margin-top: 40px;
+	margin-bottom: 14px;
+}
+input {
+	background: var(--background);
+
+	font-family: "Poppins", sans-serif;
+	color: var(--text);
+	font-weight: 400;
+	text-align: left;
+	font-size: 18px;
+
+	outline: none;
+	border: none;
+
+	width: 35px;
+	border-radius: 7px;
+	padding: 10px;
+	padding-left:  14px;
+	padding-right: 14px;
+}
+input::placeholder {
+	color: var(--text);
+	opacity: 0.6;
+}
+#desiredComponent {
+	position: relative;
+
+	font-family: "Poppins", sans-serif;
+	color: var(--text);
+	font-weight: 400;
+	text-align: left;
+	font-size: 18px;
+	
+	display: inline-block;
+	background: var(--background);
+	
+	width: max-content;
+	border-radius: 7px;
+	padding: 10px;
+	padding-left:  18px;
+	padding-right: 50px;
+	margin-left: 5px;
+
+	user-select: none;
+	cursor: pointer;
+}
+#desiredComponent::after {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+
+	width:  18px;
+	height: 18px;
+
+	background-image: url("../img/expandArrow.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+#calculateButton {
+	font-family: "Poppins", sans-serif;
+	color: var(--primary);
+	font-weight: 500;
+	text-align: left;
+	font-size: 18px;
+
+	margin: 15px;
+	margin-left: 0px;
+	display: block;
+	
+	background: #1D1F22;
+	
+	width: max-content;
+	border-radius: 7px;
+	padding: 10px;
+	padding-left:  22px;
+	padding-right: 22px;
+
+	user-select: none;
+	cursor: pointer;
+}
+
+#componentModal {
+	display: none;
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--secondary);
+}
+#componentModal.active {
+	display: block;
+}
+
+#componentModal .tier {
+	position: relative;
+	margin-top: 20px;
+	margin-left: 30px;
+	padding-bottom: 4px;
+	margin-top: 30px;
+}
+#componentModal .tier::before {
+	content: "";
+	display: block;
+
+	position: absolute;
+	top: 0;
+	left: -30px;
+	width: 7px;
+	height: 100%;
+
+	background: var(--primary);
+	border-radius: 10px;
+}
+#componentModal h1 {
+	font-family: "Noto Sans Display", sans-serif;
+	font-weight: 600;
+	font-size: 22px;
+	color: var(--text);
+	user-select: none;
+	padding-top: 8px;
+
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+#componentModal .component {
+	font-family: "Poppins", sans-serif;
+	font-weight: 400;
+	font-size: 15px;
+	color: var(--text);
+	user-select: none;
+
+	width: max-content;
+	border-radius: 5px;
+	margin-bottom: 6px;
+	padding: 6px;
+	padding-left:  12px;
+	padding-right: 12px;
+	background-color: var(--accent);
+	transition: background-color 150ms linear;
+}
+#componentModal .component:hover {
+	background-color: #203543;
+	cursor: pointer;
+}
+
+
+#componentsList .component {
+	background-color: #0A1C2950;
+	border-radius: 10px;
+
+	position: relative;
+
+	width: calc(100% - 80px);
+	height: max-content;
+	padding: 20px;
+	padding-top: 15px;
+	padding-bottom: 17px;
+	margin-bottom: 30px;
+	margin-left: 18px;
+}
+#componentsList .component::before {
+	content: "";
+	display: block;
+
+	position: absolute;
+	top: 0;
+	left: -18px;
+	
+	width: 8px;
+	height: 100%;
+	border-radius: 10px;
+	background-color: #7AFFB7e6;
+}
+#componentsList .component.waste::before {
+	background-color: #FF6666e6;
+}
+#componentsList .component h1 {
+	font-family: "Poppins", sans-serif;
+	font-weight: 600;
+	font-size: 20px;
+	color: var(--text);
+	user-select: none;
+
+	margin: 0;
+	margin-bottom: -2px;
+}
+#componentsList .component div {
+	font-family: "Poppins", sans-serif;
+	font-weight: 400;
+	font-size: 14px;
+	color: var(--text);
+	user-select: none;
+	margin-top: 4px;
+	
+	display: inline-block;
+}
+#componentsList .component .number {
+	background-color: var(--accent);
+	font-weight: 500;
+	padding: 5px;
+	padding-left:  8px;
+	padding-right: 8px;
+	border-radius: 6px;
+	margin-right: 5px;
+
+	color: #F6B993;
+}
+#componentsList .component .number.waste {
+	background-color: #19131B;
+	color: #FF7A7A;
+}
+#componentsList .component .number.noWaste {
+	background-color: #092029;
+	color: #7AFFB7;
+}
+#componentsList .component>div {
+	margin-right: 20px;
+}
+#componentsList .component>div:last-child {
+	margin-right: 0px;
+}
