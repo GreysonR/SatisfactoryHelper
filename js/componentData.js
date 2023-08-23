@@ -146,6 +146,16 @@ var ComponentData = {
 			"iron rod": 12,
 		},
 	},
+
+	// 5 
+	"versatile framework": {
+		machine: "assembler",
+		quantity: 5,
+		inputs: {
+			"modular frame": 2.5,
+			"steel beam": 30,
+		},
+	},
 }
 
 
@@ -171,10 +181,12 @@ initAllComponentDepths();
 
 function selectComponent(componentName) {
 	document.getElementById("componentModal").classList.remove("active");
+	document.getElementById("sideMenu").classList.remove("componentModal");
 
 	let desiredComponentElem = document.getElementById("desiredComponent");
 	desiredComponentElem.value = componentName;
 	desiredComponentElem.innerHTML = componentName.toCapital();
+	document.getElementById("desiredQuantity").value = ComponentData[componentName].quantity;
 }
 function initComponentUI() {
 	/*

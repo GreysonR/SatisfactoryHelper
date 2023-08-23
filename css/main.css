@@ -57,13 +57,28 @@ canvas {
 
 	/* background: var(--background); */
 	border-radius: var(--borderRadius);
-	height: inherit;
+	height: auto;
 	width: 100%;
 
 	font-family: "Poppins", sans-serif;
 	font-weight: 400;
 	font-size: 16px;
 	color: var(--text);
+}
+#sideMenu.componentModal {
+	overflow-y: hidden;
+}
+@media (max-aspect-ratio:1/1) {
+	#dashboard {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr;
+		grid-column-gap: 0px;
+		grid-row-gap: 5px;
+	}
+	#sideMenu {
+		height: auto;
+		width: 100%;
+	}
 }
 .scrollSection {
 	overflow-y: scroll;
@@ -108,12 +123,13 @@ canvas {
 	margin-bottom: -70px;
 	pointer-events: none;
 }
-.scrollSection::after {
+.scrollSection.bottomGradient::after {
 	content: "";
 	display: block;
 	
 	position: sticky;
 	left: 0;
+	/* top: calc(100% - 100px); */
 	bottom: -1px;
 
 	z-index: 2;
@@ -283,6 +299,9 @@ input::placeholder {
 }
 
 
+#componentsList {
+	height: max-content;
+}
 #componentsList .component {
 	background-color: #0A1C2950;
 	border-radius: 10px;

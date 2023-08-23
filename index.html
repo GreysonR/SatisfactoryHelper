@@ -17,7 +17,7 @@
 		<div id="canvWrapper">
 			<canvas id="canv"></canvas>
 		</div>
-		<div id="sideMenu">
+		<div id="sideMenu" class="scrollSection bottomGradient topGradient">
 			<h1>Output</h1>
 			<div style="width: 100%; position: relative">
 				<input type="text" id="desiredQuantity" placeholder="0" value=2>
@@ -71,7 +71,9 @@
 				<script>
 					function openComponentModal() {
 						let modal = document.getElementById("componentModal");
+						let sideMenu = document.getElementById("sideMenu");
 						modal.classList.add("active");
+						sideMenu.classList.add("componentModal")
 					}
 				</script>
 				<div id="calculateButton" onclick="runCalculateProduction()">Calculate</div>
@@ -88,7 +90,7 @@
 				</script>
 			</div>
 			<div id="componentModal">
-				<div id="componentModalContent" class="scrollSection topGradient">
+				<div id="componentModalContent" class="scrollSection topGradient bottomGradient">
 					<div style="height: 50px"></div>
 					<!-- <div class="tier">
 						<h1>Tier 1</h1>
@@ -101,32 +103,17 @@
 			</div>
 
 			<h1 style="margin-top: 30px;">Components</h1>
-			<div id="componentsList" style="height: 75%;">
-				<div class="scrollSection" id="componentsListContent" style="margin-left: 0; border-radius: 5px;">
-					<!-- <div class="component waste">
-						<h1>Reinforced iron plate</h1>
-						<div><div class="number">3</div> Used</div>
-						<div><div class="number">45</div> Produced</div>
-						<div><div class="number">1</div> Assembler</div>
-						<div><div class="number waste">2</div> Wasted</div>
-					</div>
-					<div class="component">
-						<h1>Reinforced iron plate</h1>
-						<div><div class="number">999</div> Used</div>
-						<div><div class="number">99999</div> Produced</div>
-						<div><div class="number">99999</div> Constructors</div>
-						<div><div class="number noWaste">999</div> Wasted</div>
-					</div> -->
-				</div>
+			<div id="componentsList">
 			</div>
 			<script>
+				/*
 				(function fixComponentsListHeight() {
 					let elem = document.getElementById("componentsList");
 					let dashboard = document.getElementById("dashboard");
 					elem.style.height = (dashboard.clientTop + dashboard.clientHeight - elem.clientTop - 270) + "px";
 
 					window.addEventListener("resize", fixComponentsListHeight);
-				})();
+				})();/**/
 			</script>
 		</div>
 	</div>
@@ -143,11 +130,14 @@
 
 
 	<script src="./js/vec.js"></script>
+	<script src="./js/grid.js"></script>
 	<script src="./js/Render.js"></script>
 	<script src="./js/Math.js"></script>
 	<script src="./js/componentData.js"></script>
 	<script src="./js/Components.js"></script>
+	<script src="./js/Pipes.js"></script>
 	<script src="./js/calculateProduction.js"></script>
+	<script src="./js/calculateSplitters.js"></script>
 
 	<script src="./js/main.js"></script>
 </body>

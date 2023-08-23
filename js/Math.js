@@ -1,3 +1,4 @@
+// Basic math function definitions
 Math.gcd = function(...terms) {
 	if (terms.length === 2) {
 		// Euclidean algorithm
@@ -20,6 +21,34 @@ Math.lcm = function(...terms) {
 	else {
 		return Math.lcm(terms.shift(), Math.lcm(...terms));
 	}
+}
+Math.factors = function(x) {
+	let factors = [];
+	for (let i = 2; i < x; i++) {
+		let a = x / i;
+		if (Math.abs(Math.round(a) - a) < 0.00001) {
+			factors.push(i);
+		}
+	}
+	return factors;
+}
+Math.primeFactors = function(x) {
+	let factors = []
+	while (x % 2 === 0) {
+		factors.push(2);
+		x /= 2;
+	}
+	let sqrt = Math.sqrt(x);
+	for (let i = 3; i <= sqrt; i += 2) {
+		while (x % i === 0) {
+			factors.push(i);
+			x /= i;
+		}
+	}
+	if (x > 2) {
+		factors.push(x);
+	}
+	return factors;
 }
 
 String.prototype.toCapital = function() {

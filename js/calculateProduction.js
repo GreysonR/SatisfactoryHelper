@@ -1,4 +1,5 @@
 "use strict";
+// Calculates graph of nodes and renders it
 var camera = Render.camera;
 function calculateProduction(productName, desiredQuantity) {
 	console.clear();
@@ -300,7 +301,7 @@ function calculateProduction(productName, desiredQuantity) {
 
 	// Add components to UI
 	function setUI() {
-		let parent = document.getElementById("componentsListContent");
+		let parent = document.getElementById("componentsList");
 		parent.innerHTML = "";
 		let keys = Object.keys(usedComponents);
 		keys.sort((a, b) => {
@@ -477,9 +478,44 @@ function calculateProduction(productName, desiredQuantity) {
 		viewBranch(renderBranches[0]);
 	}
 
-	
+	// Reset pipes
+	Pipeline.all.length = 0;
+	Pipeline.initGrid(allNodes);
+	Pipeline.scale = blockSize;
+
+	// Create pipes
+	/*
+	for (let node of allNodes) {
+		for (let connection of node.out) {
+			if (connection.from && connection.to) {
+				let pipe = new Pipeline(new vec(connection.from.position), new vec(connection.to.position));
+				// let from = connection.from.position.mult(blockSize).add2(groupShift);
+				// let to = connection.to.position.mult(blockSize).add2(groupShift);
+
+				// let dir = to.sub(from).normalize().mult(25);
+				// ctx.moveTo(from.x + dir.x, from.y + dir.y);
+				// for (let point of connection.interPoints) {
+				// 	point = point.mult(blockSize);
+				// 	ctx.lineTo(point.x, point.y);
+				// 	ctx.arc(point.x, point.y, 3, 0, Math.PI*2);
+				// 	ctx.moveTo(point.x, point.y);
+				// }
+				// ctx.lineTo(to.x - dir.x, to.y - dir.y);
+				// Render.arrow(to.sub(dir), dir.normalize(), 5);
+			}
+		}
+	}/* */
+
 	// Render nodes
 	Render.on("beforeRender", () => {
+		// render pipes
+		/*ctx.strokeStyle = "#73747880";
+		ctx.lineWidth = 5;
+		for (let pipe of Pipeline.all) {
+			pipe.render();
+		}/* */
+		
+		// render nodes
 		let groupShiftAmount = 650;
 		let minId = Math.min(...renderBranches.map(v => v.id));
 		for (let node of allNodes) {
@@ -488,6 +524,7 @@ function calculateProduction(productName, desiredQuantity) {
 			let groupShift = new vec(((node.renderGroup?.id || 0) - minId) * groupShiftAmount, 0);
 			position.add2(groupShift);
 
+			
 			// render connections
 			ctx.beginPath();
 			ctx.strokeStyle = "#73747880";
@@ -509,7 +546,7 @@ function calculateProduction(productName, desiredQuantity) {
 					Render.arrow(to.sub(dir), dir.normalize(), 5);
 				}
 			}
-			ctx.stroke();
+			ctx.stroke();/**/
 
 			// render node
 			ctx.beginPath();
