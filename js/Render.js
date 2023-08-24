@@ -118,6 +118,37 @@ Render.roundedPolygon = function(vertices, round) {
 
 	ctx.closePath();
 }
+Render.roundedPath = function(vertices, round) {
+	if (vertices.length < 3) {
+		console.warn("Render.roundedPolygon needs at least 3 vertices", vertices);
+		return;
+	}
+	function getPoints(i) {
+		let curPt = vertices[i];
+		let lastPt = vertices[(vertices.length + i - 1) % vertices.length];
+		let nextPt = vertices[(i + 1) % vertices.length];
+
+		let lastDiff = lastPt.sub(curPt);
+		let nextDiff = curPt.sub(nextPt);
+		let lastLen = lastDiff.length;
+		let nextLen = nextDiff.length;
+
+		let curRound = Math.min(lastLen / 2, nextLen / 2, round);
+		let cp = curPt;
+		let pt1 = cp.add(lastDiff.normalize().mult(curRound));
+		let pt2 = cp.sub(nextDiff.normalize().mult(curRound));
+
+		return [pt1, cp, pt2];
+	}
+
+	ctx.moveTo(vertices[0].x, vertices[0].y);
+
+	for (let i = 1; i < vertices.length; i++) {
+		let cur = getPoints(i);
+		ctx.lineTo(cur[0].x, cur[0].y);
+		ctx.quadraticCurveTo(cur[1].x, cur[1].y, cur[2].x, cur[2].y);
+	}
+}
 Render.arrow = function(position, direction, size = 10) {
 	let endPos = new vec(position.x + direction.x, position.y + direction.y);
 	let sideA = direction.rotate(Math.PI * 3/4).normalize2().mult(size);

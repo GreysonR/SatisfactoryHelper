@@ -1,5 +1,5 @@
 class vec {
-	constructor(x, y) {
+	constructor(x = 0, y = 0) {
 		if (typeof x === "object") {
 			if (Array.isArray(x)) {
 				this.x = x[0];

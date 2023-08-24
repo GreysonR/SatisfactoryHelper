@@ -35,7 +35,7 @@ canvas {
 #dashboard {
 	display: grid;
 	grid-template-rows: 1fr;
-	grid-template-columns: 1fr min(42vw, 700px);
+	grid-template-columns: 7fr 4fr;
 	grid-column-gap: 40px;
 
 	position: absolute;

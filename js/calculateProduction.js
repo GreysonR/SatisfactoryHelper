@@ -377,6 +377,13 @@ function calculateProduction(productName, desiredQuantity) {
 		camera.position.set(branch.bounds.max.add(branch.bounds.min).mult(0.5 * blockSize));
 		let boundSize = branch.bounds.max.sub(branch.bounds.min);
 		camera.fov = Math.max(800, Math.max(boundSize.x, boundSize.y) * blockSize * 1 + 200);
+		bounds.fov.max = camera.fov;
+
+		let center = branch.bounds.max.avg(branch.bounds.min).mult(blockSize);
+		let size = branch.bounds.max.sub(branch.bounds.min).mult(blockSize);
+		console.log(center, size);
+		bounds.camera.max.set(center.add(size.mult(0.8)));
+		bounds.camera.min.set(center.sub(size.mult(0.8)));
 	}
 	function createRenderNodes() {
 		resetBranches(renderBranches);
@@ -484,36 +491,24 @@ function calculateProduction(productName, desiredQuantity) {
 	Pipeline.scale = blockSize;
 
 	// Create pipes
-	/*
+	
 	for (let node of allNodes) {
 		for (let connection of node.out) {
 			if (connection.from && connection.to) {
-				let pipe = new Pipeline(new vec(connection.from.position), new vec(connection.to.position));
-				// let from = connection.from.position.mult(blockSize).add2(groupShift);
-				// let to = connection.to.position.mult(blockSize).add2(groupShift);
-
-				// let dir = to.sub(from).normalize().mult(25);
-				// ctx.moveTo(from.x + dir.x, from.y + dir.y);
-				// for (let point of connection.interPoints) {
-				// 	point = point.mult(blockSize);
-				// 	ctx.lineTo(point.x, point.y);
-				// 	ctx.arc(point.x, point.y, 3, 0, Math.PI*2);
-				// 	ctx.moveTo(point.x, point.y);
-				// }
-				// ctx.lineTo(to.x - dir.x, to.y - dir.y);
-				// Render.arrow(to.sub(dir), dir.normalize(), 5);
+				new Pipeline(new vec(connection.from.position), new vec(connection.to.position));
 			}
 		}
-	}/* */
+	}
+	Pipeline.shiftAll();
 
 	// Render nodes
 	Render.on("beforeRender", () => {
 		// render pipes
-		/*ctx.strokeStyle = "#73747880";
-		ctx.lineWidth = 5;
+		ctx.strokeStyle = "#73747880";
+		ctx.lineWidth = 4;
 		for (let pipe of Pipeline.all) {
 			pipe.render();
-		}/* */
+		}
 		
 		// render nodes
 		let groupShiftAmount = 650;
@@ -526,6 +521,7 @@ function calculateProduction(productName, desiredQuantity) {
 
 			
 			// render connections
+			/*
 			ctx.beginPath();
 			ctx.strokeStyle = "#73747880";
 			ctx.lineWidth = 3;
@@ -550,22 +546,42 @@ function calculateProduction(productName, desiredQuantity) {
 
 			// render node
 			ctx.beginPath();
-			// Render.roundedRect(80, 80, position, 7);
-			ctx.arc(position.x, position.y, 20, 0, Math.PI*2);
-			ctx.fillStyle = "#E6905Bbf";
+			Render.roundedRect(100, 70, position, 10);
+			// ctx.arc(position.x, position.y, 20, 0, Math.PI*2);
+			ctx.fillStyle = "#BE7040"; // E6905Bbf
 			ctx.fill();
 
-			// render text
+			// Render text
 			ctx.beginPath();
-			ctx.fillStyle = "#F0F0EF";
 			let fontSize = 16;
-			ctx.font = `700 ${fontSize}px Noto sans`;
-			ctx.textAlign = "center";
 			let centerY = position.y + 6;
-			let lineSize = 10;
-			ctx.fillText(node.type, position.x, centerY - lineSize);
-			ctx.font = `700 ${fontSize}px Poppins`;
-			ctx.fillText(node.outputResources[node.type], position.x, centerY + lineSize);
+			let lineSize = 17;
+			
+			// - get lines of text
+			let text = node.type.toTitle().split(" ");
+			let characters = 0;
+			let maxLineCharacters = 4;
+			for (let i = 0; i < text.length; i++) {
+				let piece = text[i];
+				characters += piece.length;
+				if (characters > maxLineCharacters) {
+					characters = 0;
+					text[i] += "\n";
+				}
+			}
+			text = text.join(" ");
+			let lines = text.split("\n").filter(v => v != "\n" && v);
+			if (node.type !== "output") lines.push(node.outputResources[node.type]);
+
+			// - render lines
+			ctx.font = `700 ${fontSize}px Noto Sans Display`;
+			ctx.fillStyle = "#F0F0EF";
+			ctx.textAlign = "center";
+			for (let i = 0; i < lines.length; i++) {
+				ctx.fillText(lines[i], position.x, centerY - lineSize * (lines.length*0.5 - i) + 10);
+			}
+			// ctx.font = `700 ${fontSize}px Poppins`;
+			// ctx.fillText(node.outputResources[node.type], position.x, centerY + lineSize);
 		}
 
 		// branch bounds render
@@ -583,5 +599,3 @@ function calculateProduction(productName, desiredQuantity) {
 	});
 }
 
-Render.camera.fov = 2000;
-calculateProduction("modular frame", 2);

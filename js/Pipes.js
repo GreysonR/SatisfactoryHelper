@@ -3,11 +3,14 @@ class Pipeline {
 	static all = [];
 	static nodesGrid = null;
 	static scale = 1;
-	static initGrid(nodes) {
+	static initGrid(nodes) { // resets the body grid to include new nodes
 		this.nodesGrid = new Grid(1);
 		for (let node of nodes) {
 			this.nodesGrid.addPoint(node);
 		}
+	}
+	static shiftAll() { // shifts pipes so they aren't on top of each other
+
 	}
 	constructor(from, to) {
 		this.from = from;
@@ -24,17 +27,17 @@ class Pipeline {
 		this.vertices.push(new vec(to.x, (from.y + to.y) * 0.5));
 		this.vertices.push(to.add(new vec(0, -gap)));
 		this.vertices.push(to.add(new vec(0, -gap + margin)));
+		
+		// filter out duplicate vertices
+		this.vertices = this.vertices.filter((value, index, array) => {
+			return index === 0 || !value.equals(array[index - 1]);
+		});
 	}
 	render() {
 		ctx.globalCompositeOperation = "screen";
 		ctx.beginPath();
 		let scale = Pipeline.scale;
-		let vertices = this.vertices;
-		ctx.moveTo(vertices[0].x * scale, vertices[0].y * scale);
-		for (let i = 1; i < vertices.length; i++) {
-			let vertice = vertices[i];
-			ctx.lineTo(vertice.x * scale, vertice.y * scale);
-		}
+		Render.roundedPath(this.vertices.map(v => v.mult(scale)), 20);
 		ctx.stroke();
 		ctx.globalCompositeOperation = "source-over";
 	}

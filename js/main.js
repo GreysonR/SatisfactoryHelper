@@ -12,6 +12,7 @@ setTimeout(resize, 0);
 var camera = Render.camera;
 
 function main() {
+	Performance.update();
 	Render();
 	requestAnimationFrame(main);
 }

@@ -54,6 +54,9 @@ Math.primeFactors = function(x) {
 String.prototype.toCapital = function() {
 	return this.slice(0, 1).toUpperCase() + this.slice(1);
 }
+String.prototype.toTitle = function() {
+	return this.split(" ").map(v => v.toCapital()).join(" ");
+}
 
 function merge(obj, options) { // deep copies options object onto obj, no return since it's in-place
 	Object.keys(options).forEach(option => {
