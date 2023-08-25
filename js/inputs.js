@@ -33,7 +33,7 @@ window.addEventListener("mousemove", event => {
 		camera.position.add2(diff);
 	}
 });
-Render.on("afterRender", () => { // restrict camera to bounds
+Render.on("beforeSave", () => { // restrict camera to bounds
 	let delta = new vec();
 	if (camera.bounds.min.x < bounds.camera.min.x || camera.bounds.min.y < bounds.camera.min.y) { // not confusing at all
 		delta.add2(camera.bounds.min.max(bounds.camera.min).sub(camera.bounds.min).mult(Performance.delta * 0.01));
@@ -43,6 +43,13 @@ Render.on("afterRender", () => { // restrict camera to bounds
 	}
 	delta = delta.abs().pow(2).mult(delta.sign()).mult(0.1);
 	camera.position.add2(delta);
+
+	if (isNaN(camera.position.x) || isNaN(camera.position.y)) {
+		camera.position.set(bounds.camera.max.avg(bounds.camera.min));
+	}
+	if (isNaN(camera.fov)) {
+		camera.fov = camera.fov.max;
+	}
 });
 window.addEventListener("mousedown", event => {
 	if (event.button === 0 && event.target.id === "canvWrapper") {

@@ -39,6 +39,7 @@ function calculateProduction(productName, desiredQuantity) {
 	// Trim excess production
 	let branches = [];
 	let renderBranches = [];
+	let allRenderBranches = [];
 	window.branches = branches;
 	window.allNodes = allNodes;
 	function resetBranches(branches) {
@@ -374,13 +375,14 @@ function calculateProduction(productName, desiredQuantity) {
 
 	// Create render nodes
 	function viewBranch(branch) {
-		camera.position.set(branch.bounds.max.add(branch.bounds.min).mult(0.5 * blockSize));
-		let boundSize = branch.bounds.max.sub(branch.bounds.min);
+		let max = branch.bounds.max.sub(new vec(0, 1)); // remove output from bounds
+		camera.position.set(max.add(branch.bounds.min).mult(0.5 * blockSize));
+		let boundSize = max.sub(branch.bounds.min);
 		camera.fov = Math.max(800, Math.max(boundSize.x, boundSize.y) * blockSize * 1 + 200);
 		bounds.fov.max = camera.fov;
 
-		let center = branch.bounds.max.avg(branch.bounds.min).mult(blockSize);
-		let size = branch.bounds.max.sub(branch.bounds.min).mult(blockSize);
+		let center = max.avg(branch.bounds.min).mult(blockSize);
+		let size = max.sub(branch.bounds.min).mult(blockSize);
 		console.log(center, size);
 		bounds.camera.max.set(center.add(size.mult(0.8)));
 		bounds.camera.min.set(center.sub(size.mult(0.8)));
@@ -431,11 +433,11 @@ function calculateProduction(productName, desiredQuantity) {
 
 							// median
 							let nodeOutInputs = nodeOut.in.map(inputConnection => inputConnection.from.position.x);
-							// nodeOut.position.x = Math.ceil((nodeOutInputs[Math.max(0, Math.floor(nodeOutInputs.length / 2) - 1)] + nodeOutInputs[Math.ceil(nodeOutInputs.length / 2) - 1]) / 2); // medium with avg
-							nodeOut.position.x = nodeOutInputs[Math.floor(nodeOutInputs.length / 2)]; // median without avg
+							nodeOut.position.x = Math.ceil((nodeOutInputs[Math.max(0, Math.floor(nodeOutInputs.length / 2 - 0.5))] + nodeOutInputs[Math.ceil(nodeOutInputs.length / 2 - 0.5)]) / 2); // medium with avg
+							// nodeOut.position.x = nodeOutInputs[Math.floor(nodeOutInputs.length / 2)]; // median without avg
 
 							let posA = branch.getOpenPosition(new vec(nodeOut.position), new vec(-1, 0));
-							let posB = branch.getOpenPosition(new vec(nodeOut.position), new vec(1, 0));
+							let posB = branch.getOpenPosition(new vec(nodeOut.position), new vec( 1, 0));
 							if (Math.abs(posA.x - nodeOut.position.x) <= Math.abs(posB.x - nodeOut.position.x)) {
 								nodeOut.position.x = posA.x;
 							}
@@ -472,6 +474,7 @@ function calculateProduction(productName, desiredQuantity) {
 			}
 		});/* */
 		
+		allRenderBranches = [...renderBranches];
 		for (let depth = 0; depth <= ComponentData[productName].depth + 1; depth++) {
 			for (let i = 0; i < renderBranches.length; i++) {
 				let branch = renderBranches[i];
@@ -491,10 +494,9 @@ function calculateProduction(productName, desiredQuantity) {
 	Pipeline.scale = blockSize;
 
 	// Create pipes
-	
 	for (let node of allNodes) {
 		for (let connection of node.out) {
-			if (connection.from && connection.to) {
+			if (connection.from && connection.to && connection.to.type !== "output") {
 				new Pipeline(new vec(connection.from.position), new vec(connection.to.position));
 			}
 		}
@@ -511,10 +513,11 @@ function calculateProduction(productName, desiredQuantity) {
 		}
 		
 		// render nodes
-		let groupShiftAmount = 650;
+		let groupShiftAmount = 0;
 		let minId = Math.min(...renderBranches.map(v => v.id));
 		for (let node of allNodes) {
 			// if (!node.group) continue;
+			if (node.type === "output") continue;
 			let position = node.position.mult(blockSize);
 			let groupShift = new vec(((node.renderGroup?.id || 0) - minId) * groupShiftAmount, 0);
 			position.add2(groupShift);
@@ -586,15 +589,16 @@ function calculateProduction(productName, desiredQuantity) {
 
 		// branch bounds render
 		/*
-		for (let branch of renderBranches) {
+		for (let branch of allRenderBranches) {
 			let groupShift = new vec(branch.id * groupShiftAmount, 0);
 			ctx.beginPath();
-			ctx.strokeStyle = "#ffffff80";
-			ctx.lineWidth = 3;
+			ctx.strokeStyle = "#ff000060";
+			ctx.lineWidth = 6;
 			let bounds = branch.bounds;
 			let size = bounds.max.sub(bounds.min).add(1).mult(blockSize);
-			let center = bounds.min.avg(bounds.max).mult(blockSize).add(groupShift).sub(size.div(2));
-			ctx.strokeRect(center.x, center.y, size.x, size.y);
+			let center = bounds.min.avg(bounds.max).mult(blockSize).add(groupShift);
+			Render.roundedRect(size.x, size.y, center, 40);
+			ctx.stroke();
 		}/**/
 	});
 }

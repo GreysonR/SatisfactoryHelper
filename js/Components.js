@@ -252,6 +252,18 @@ class RenderBranch {
 			max: new vec(0, 0),
 		}
 	}
+	resetBounds() {
+		return; // doesn't really do anything since you nodes are only removed when deleting a branch
+		this.bounds = {
+			min: new vec(0, 0),
+			max: new vec(0, 0),
+		};
+
+		for (let node of this.nodes) {
+			this.bounds.min.min2(node.position);
+			this.bounds.max.max2(node.position);
+		}
+	}
 	addNode(node) {
 		if (!this.nodes.includes(node)) {
 			this.nodes.push(node);
@@ -266,7 +278,7 @@ class RenderBranch {
 			this.nodes.delete(node);
 			this.grid.removeBody(node);
 			node.renderGroup = null;
-			// bounds not updated
+			this.resetBounds();
 		}
 		else {
 			console.warn("no node", node, this);
@@ -299,8 +311,9 @@ class RenderBranch {
 	shift(shift) { // shifts all nodes by given amount
 		for (let node of this.nodes) {
 			node.setPosition(node.position.add(shift));
-			this.bounds.min.min2(node.position);
-			this.bounds.max.max2(node.position);
+			// this.bounds.min.min2(node.position);
+			// this.bounds.max.max2(node.position);
+			this.resetBounds();
 		}
 	}
 }

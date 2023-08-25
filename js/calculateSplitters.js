@@ -29,6 +29,7 @@ function calculateSplitters(inputQuantity, outputQuantites) {
 		for (let outputNode of outputs) {
 			let givenNodes = Math.floor(outputNode.remainingInput / inputNode.quantity);
 			if (givenNodes > 0) {
+				inputNode.outputs.push(outputNode);
 				outputNode.inputs.push(inputNode);
 				outputNode.remainingInput -= inputNode.quantity;
 				return;
@@ -50,6 +51,7 @@ function calculateSplitters(inputQuantity, outputQuantites) {
 		for (let outputNode of outputs) { 
 			let givenNodes = Math.floor(outputNode.remainingInput / node.quantity);
 			if (givenNodes > 0) {
+				node.outputs.push(outputNode);
 				outputNode.inputs.push(node);
 				outputNode.remainingInput -= node.quantity;
 				break;
