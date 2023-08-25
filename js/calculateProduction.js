@@ -418,7 +418,13 @@ function calculateProduction(productName, desiredQuantity) {
 							else {
 								shiftAmount = boundsB.max.x - boundsA.min.x + 1;
 							}
-							branch.shift(new vec(shiftAmount, 0));
+							branch.shift(new vec(shiftAmount, 0)); // shift branch onto edge of branchB
+
+							let i = 0;
+							let slotDirection = new vec(-shiftDirection, 0); // shift branch in opposite direction to remove gaps
+							while (branch.canShift(slotDirection, branchB) && i++ < 1000) {
+								branch.shift(slotDirection);
+							}
 
 							branchB.addBranch(branch);
 							return branchB;
@@ -427,13 +433,26 @@ function calculateProduction(productName, desiredQuantity) {
 							nodeOut.position.y = depth;
 
 							// mean
-							// nodeOut.position.x = Math.ceil(nodeOut.in.reduce((total, inputConnection) => {
-							// 	return total + inputConnection.from.position.x;
-							// }, 0) / (nodeOut.in.length || 1));
+							nodeOut.position.x = Math.ceil(nodeOut.in.reduce((total, inputConnection) => {
+								return total + inputConnection.from.position.x;
+							}, 0) / (nodeOut.in.length || 1));
+
+							// weighted mean (not working)
+							// let totalDepth = 1;
+							// console.log("-----");
+							// nodeOut.position.x = nodeOut.in.reduce((total, inputConnection) => {
+							// 	let weight = (inputConnection.from.depth + 1) ** 0.5;
+							// 	totalDepth += weight;
+							// 	console.log(inputConnection.from.position.x, weight);
+							// 	return total + inputConnection.from.position.x * weight;
+							// }, 0);
+							// node.position.x = Math.round(node.position.x / totalDepth);
+							// console.log(node.position.x, totalDepth);
+
 
 							// median
-							let nodeOutInputs = nodeOut.in.map(inputConnection => inputConnection.from.position.x);
-							nodeOut.position.x = Math.ceil((nodeOutInputs[Math.max(0, Math.floor(nodeOutInputs.length / 2 - 0.5))] + nodeOutInputs[Math.ceil(nodeOutInputs.length / 2 - 0.5)]) / 2); // medium with avg
+							let nodeOutInputs = nodeOut.in.map(inputConnection => inputConnection.from.position.x).sort((a, b) => a - b);
+							nodeOut.position.x = Math.ceil((nodeOutInputs[Math.max(0, Math.floor(nodeOutInputs.length / 2 - 1))] + nodeOutInputs[Math.ceil(nodeOutInputs.length / 2 - 1)]) / 2); // medium with avg
 							// nodeOut.position.x = nodeOutInputs[Math.floor(nodeOutInputs.length / 2)]; // median without avg
 
 							let posA = branch.getOpenPosition(new vec(nodeOut.position), new vec(-1, 0));

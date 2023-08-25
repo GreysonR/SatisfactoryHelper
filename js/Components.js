@@ -313,7 +313,15 @@ class RenderBranch {
 			node.setPosition(node.position.add(shift));
 			// this.bounds.min.min2(node.position);
 			// this.bounds.max.max2(node.position);
-			this.resetBounds();
 		}
+		this.resetBounds();
+	}
+	canShift(shift, branchB) {
+		for (let node of this.nodes) {
+			if (branchB.grid.getBody(node.position.add(shift))) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
