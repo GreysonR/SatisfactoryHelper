@@ -12,10 +12,13 @@ class Pipeline {
 	static shiftAll() { // shifts pipes so they aren't on top of each other
 
 	}
-	constructor(from, to) {
-		this.from = from;
-		this.to = to;
+	constructor(fromNode, toNode) {
+		this.from = fromNode;
+		this.to = toNode;
 		this.vertices = [];
+
+		let from = new vec(fromNode.position);
+		let to = new vec(toNode.position);
 
 		Pipeline.all.push(this);
 		
@@ -34,11 +37,9 @@ class Pipeline {
 		});
 	}
 	render() {
-		ctx.globalCompositeOperation = "screen";
 		ctx.beginPath();
 		let scale = Pipeline.scale;
 		Render.roundedPath(this.vertices.map(v => v.mult(scale)), 20);
 		ctx.stroke();
-		ctx.globalCompositeOperation = "source-over";
 	}
 }

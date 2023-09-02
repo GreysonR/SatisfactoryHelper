@@ -5,6 +5,7 @@ function calculateProduction(productName, desiredQuantity) {
 	console.clear();
 	var blockSize = 120;
 	Render.events.beforeRender.length = 0;
+	mouse.clickingNode = null;
 	
 	// Create base tree with excess production
 	let allNodes = [];
@@ -516,21 +517,53 @@ function calculateProduction(productName, desiredQuantity) {
 	for (let node of allNodes) {
 		for (let connection of node.out) {
 			if (connection.from && connection.to && connection.to.type !== "output") {
-				new Pipeline(new vec(connection.from.position), new vec(connection.to.position));
+				new Pipeline(connection.from, connection.to);
 			}
 		}
 	}
 	Pipeline.shiftAll();
 
+	function getNodeHovering() {
+		let mousePosition = getMouseCanvas();
+		for (let node of allNodes) {
+			let position = node.position.mult(blockSize);
+			let size = new vec(100, 70);
+			let distance = mousePosition.sub(position).abs2().sub(size.mult(0.5));
+
+			if (distance.x <= 0 && distance.y <= 0) {
+				return node;
+			}
+		}
+	}
+	function openNodeInfo(node) {
+		console.log("opened", node);
+	}
+
 	// Render nodes
 	Render.on("beforeRender", () => {
+		let nodeHovering = getNodeHovering();
+		
 		// render pipes
-		ctx.strokeStyle = "#73747880";
 		ctx.lineWidth = 4;
+		ctx.strokeStyle = "#73747880";
+		ctx.globalCompositeOperation = "screen";
+		let highlightedPipes = [];
 		for (let pipe of Pipeline.all) {
+			let highlight = nodeHovering === pipe.from || nodeHovering === pipe.to;
+			if (highlight) {
+				highlightedPipes.push(pipe);
+				continue;
+			}
 			pipe.render();
 		}
-		
+		ctx.globalCompositeOperation = "source-over";
+
+		// Render highlighted pipes above other pipes
+		ctx.strokeStyle = "#8FFFAEd0";
+		for (let pipe of highlightedPipes) {
+			pipe.render();
+		}
+
 		// render nodes
 		let groupShiftAmount = 0;
 		let minId = Math.min(...renderBranches.map(v => v.id));
@@ -568,9 +601,14 @@ function calculateProduction(productName, desiredQuantity) {
 
 			// render node
 			ctx.beginPath();
-			Render.roundedRect(100, 70, position, 10);
-			// ctx.arc(position.x, position.y, 20, 0, Math.PI*2);
+			let size = new vec(100, 70);
 			ctx.fillStyle = "#BE7040"; // E6905Bbf
+			if (mouse.clickingNode === node) {
+				ctx.fillStyle = "#A76339";
+				size.mult2(0.95);
+			}
+			Render.roundedRect(size.x, size.y, position, 10);
+			// ctx.arc(position.x, position.y, 20, 0, Math.PI*2);
 			ctx.fill();
 
 			// Render text
@@ -593,7 +631,7 @@ function calculateProduction(productName, desiredQuantity) {
 			}
 			text = text.join(" ");
 			let lines = text.split("\n").filter(v => v != "\n" && v);
-			if (node.type !== "output") lines.push(node.outputResources[node.type]);
+			lines.unshift(node.outputResources[node.type]);
 
 			// - render lines
 			ctx.font = `700 ${fontSize}px Noto Sans Display`;

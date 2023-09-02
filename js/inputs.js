@@ -4,6 +4,7 @@
 var mouse = {
 	position: new vec(0, 0),
 	mouse0: false,
+	clickingNode: null,
 }
 var bounds = {
 	canv: {
@@ -72,7 +73,7 @@ window.addEventListener("wheel", event => {
 	if (event.target.id === "canvWrapper") {
 		let { min: minFov, max: maxFov } = bounds.fov;
 		let delta = event.deltaY;
-		let dFov = (camera.fov / 500) * 0.8 * delta;
+		let dFov = (camera.fov / 500) * 0.4 * delta;
 		let nextFov = camera.fov + dFov;
 		nextFov = Math.max(minFov, Math.min(maxFov, nextFov));
 		let mousePosRelative = camera.position.sub(getMouseCanvas());
